@@ -47,24 +47,38 @@ main( int nb_arg , char * tab_arg[] )
   /* A FAIRE */
   /***********/
 
-  // On veut afficher le terrain, seulement lorsque le fic a été modifié.
-  // Récuperer les infos du fic et regarder date.
   if((fd_terrain = open(fich_terrain, O_CREAT | O_EXCL)) == -1){
     fprintf(stderr,"Erreur lors de l'ouverture du ficher\n");
   }
+
   stat(fich_terrain, &infosTerrain);
   date_prec = infosTerrain.st_mtime;
-  fcntl(fd_terrain, F_SETLK, &verrou_terrain);
+
   while(1){
-    if(date_prec == infosTerrain.st_mtime){
+
+    if(date_prec < infosTerrain.st_mtime){
+
+      /* Pose du verrou */
+      verrou_terrain.l_type = F_RDLCK;
+      verrou_terrain.l_start = 0;
+      verrou_terrain.l_len = 0;
+      verrou_terrain.l_whence = 0;
+      fcntl(fd_terrain, F_SETLKW, &verrou_terrain);
+
+      /* Affichage du terrain */
       if(no_err = terrain_afficher(fd_terrain)){
         fprintf(stderr,"Erreur lors de l'affichage du terrain\n");
         exit(no_err);
       }
+      
+      /* Retrait du verrou */
+      verrou_terrain.l_type = F_UNLCK;
+      fcntl(fd_terrain, F_SETLKW, &verrou_terrain);
       date_prec = infosTerrain.st_mtime;
+
     }
     stat(fich_terrain, &infosTerrain);
-    sleep(200);
+    sleep(1);
   }
   close(fd_terrain);
   printf("\n%s : --- Arret de l'affichage du terrain ---\n", nomprog );
