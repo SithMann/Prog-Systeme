@@ -133,11 +133,13 @@ main( int nb_arg , char * tab_arg[] )
     if (no_err = terrain_dim_lire(fd, &nbLigne, &nbCol) )
         return no_err;
 
-    verrou_terrain.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &verrou_terrain);
+
 
     if ( no_err = jeu_ver_initialiser( fd, nbLigne, nbCol, &ver) )
         return no_err;
+    sleep( random() % TEMPS_MOYEN + 1 );
+    verrou_terrain.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &verrou_terrain);
 
     verrou_voisins( fd, ver.tete.x, ver.tete.y, 1 );
     
