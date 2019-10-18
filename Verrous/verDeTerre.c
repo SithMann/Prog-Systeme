@@ -108,6 +108,7 @@ main( int nb_arg , char * tab_arg[] )
      strcpy( nomprog , tab_arg[0] );
      strcpy( fich_terrain , tab_arg[1] );
      marque = tab_arg[2][0] ;
+     ver.marque = marque;
 
 
    /* Initialisation de la generation des nombres pseudo-aleatoires */

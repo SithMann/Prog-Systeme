@@ -47,7 +47,7 @@ main( int nb_arg , char * tab_arg[] )
   /* A FAIRE */
   /***********/
 
-  if((fd_terrain = open(fich_terrain, O_CREAT | O_EXCL)) == -1){
+  if((fd_terrain = open(fich_terrain, O_APPEND)) == -1){
     fprintf(stderr,"Erreur lors de l'ouverture du ficher\n");
   }
 
