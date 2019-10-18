@@ -13,4 +13,4 @@ verDeTerre.c :
     On souhaite bloquer les cases autour de la tete du vers. Pour se faire on pose des verrous
     sur trois lignes d'une longueur de trois cases afin de verouiller le carré de cases se situants
     autour de la tête.
-    On marque l'endroit où avance le vers puis on retire les verrous.
+    On marque l'endroit où avance le vers, mets à jour la liste de voisins puis on retire les verrous.
