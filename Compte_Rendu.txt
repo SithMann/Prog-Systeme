@@ -1,0 +1,16 @@
+DESPRES Mathis
+
+Compte rendu TP vers n°1
+
+vision.c : 
+    Pour afficher le terrain seulement lorsque le fichier a été modifié,
+    on récupère les informations du fichier avec la fonction stat.
+    A l'aide du champ st_mtime nous pouvons savoir si la date de modification du fichier
+    a changé. Si c'est le cas, on pose un verrou sur tout le fichier afin qu'aucun processus
+    n'écrive durant l'affichage. Une fois l'affihage terminé, on retire le verrou.
+
+verDeTerre.c :
+    On souhaite bloquer les cases autour de la tete du vers. Pour se faire on pose des verrous
+    sur trois lignes d'une longueur de trois cases afin de verouiller le carré de cases se situants
+    autour de la tête.
+    On marque l'endroit où avance le vers puis on retire les verrous.

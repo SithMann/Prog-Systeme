@@ -82,7 +82,10 @@ main( int nb_arg , char * tab_arg[] )
      char fich_terrain[128] ;
      case_t marque = CASE_LIBRE ;
      char nomprog[128] ;
-     int no_err, fd;
+     int no_err, fd, indLibre;
+     ver_t ver;
+     int nbLigne, nbCol, nbVoisin;
+     coord_t * voisin;
 
 
      /*----------*/
@@ -154,7 +157,7 @@ main( int nb_arg , char * tab_arg[] )
         verrou_voisins( fd, ver.tete.x, ver.tete.y, 1 );
         
         if ( ( no_err = terrain_voisins_rechercher( fd, ver.tete, &voisin, &nbVoisin )) )
-            return -15;
+            return no_err;
     }
 
     verrou_voisins( fd, ver.tete.x, ver.tete.y, 0 );
