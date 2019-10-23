@@ -18,63 +18,69 @@
 
 #define MAX_VERS 26
 char Nom_Prog[256] ;
-int fd;
-
-
+int fd_terrain, nbVers;
 
 /*
  * HANDLER
  */
-void handler_aire(int sig, siginfo_t *info, void *context){
-  static int tabVers[MAX_VERS];//On veut qu'il garde en mémoire les vers présents
+void handlerAire(int sig, siginfo_t *info, void *context){
+
+  static int vers[MAX_VERS];
   static ver_t tab[MAX_VERS];
-  static int init = 0;// Toujours pour ne pas le changer à chaque appel de la fonction handler;
-  int i, j, nbLigne, nbCol, no_err, nbVoisin, indLibre;
+  static int init = 0;
+  int i, nbLigne, nbCol, no_err, nbVoisin, indLibre;
   coord_t *voisin = NULL;
   
-  if(init == 0){
-    for(i = 0; tabVers[i]; i++)
-      tabVers[i] = -1;
+  if(!init){
+    for(i = 0; i < MAX_VERS; i++)
+      vers[i] = -1;
     init = 1;
+    nbVers = 0;
   }
   
-  for(i = 0; i < MAX_VERS && info->si_pid != tabVers[i]; i++);//i est une marque
+  for(i = 0; i < MAX_VERS && info->si_pid != vers[i]; i++);
   
   if(i == MAX_VERS){
-    for(i = 0; i < MAX_VERS && tabVers[i] != -1; i++);//si le tableau est plein ou si on a trouvé un emplacement libre
+    for(i = 0; i < MAX_VERS && vers[i] != -1; i++);
     if(i == MAX_VERS){
       fprintf(stderr, "Le tableau est plein");
-      //kill(, SIGUSR2);
       exit(-1);
     }
-    else
-      tabVers[i] = info->si_pid;
+    else{
+      vers[i] = info->si_pid;
+      nbVers++;
+    }
   
-  if ( terrain_dim_lire(fd, &nbLigne, &nbCol) )
-      return -1;
+  if(no_err = terrain_dim_lire(fd_terrain, &nbLigne, &nbCol))
+      return (no_err);
 
-  if ( jeu_ver_initialiser( fd, nbLigne, nbCol, &tab[i]) )
-      return -2;
+  if(no_err = jeu_ver_initialiser( fd_terrain, nbLigne, nbCol, &tab[i]))
+      return (no_err);
 
-  terrain_marque_ecrire( fd, tab[i].tete, i + 'A');//i + 'A' a utiliser dans marque ecrire
+  terrain_marque_ecrire(fd_terrain, tab[i].tete, i + 'A');
 
   }
 
   else {
-    if ( ( no_err = terrain_voisins_rechercher( fd, tab[i].tete, &voisin, &nbVoisin )) )
-      return -7;
+    if(( no_err = terrain_voisins_rechercher(fd_terrain, tab[i].tete, &voisin, &nbVoisin)))
+      return (no_err);
 
-    if ( !( no_err = terrain_case_libre_rechercher( fd, voisin, nbVoisin, &indLibre ) ) && indLibre != -1 ){
+    if(!(no_err = terrain_case_libre_rechercher( fd_terrain, voisin, nbVoisin, &indLibre)) && indLibre != -1 ){
 
-      if( (no_err = terrain_marque_ecrire( fd, voisin[indLibre], i + 'A') ) )
-        return -8;
+      if((no_err = terrain_marque_ecrire(fd_terrain, voisin[indLibre], i + 'A')))
+        return (no_err);
+      tab[i].tete = voisin[indLibre];
 
-      if(no_err = terrain_afficher(fd))
-        exit(-9);
+      if(no_err = terrain_afficher(fd_terrain))
+        return (no_err);
 
     }
     else {
       kill(info->si_pid, SIGUSR2);
+      nbVers --;
+      if(nbVers == 0){
+        fprintf(stderr,"Ver gagnant : %c !\n", i+'A');
+      }
     }
   }
   
@@ -107,7 +113,7 @@ int main( int nb_arg , char * tab_arg[] ){
   
   /* Initialisation de la generation des nombres pseudo-aleatoires */
   srandom((unsigned int)pid_aire);
-  fd = open(fich_terrain, O_RDWR);
+  
   /*----------*/
 
   printf("\n\t----- %s : Debut du jeu -----\n\n" , Nom_Prog );
@@ -115,18 +121,17 @@ int main( int nb_arg , char * tab_arg[] ){
   /***********
    * A FAIRE * 
    ***********/
+  fd_terrain = open(fich_terrain, O_RDWR);
 
-  struct sigaction act;
+  struct sigaction action;
+  action.sa_sigaction = handlerAire;
+  sigemptyset(&action.sa_mask);
+  action.sa_flags = SA_SIGINFO;
+  sigaction(SIGUSR1, &action, NULL);
 
-
-
-
-
-
-
-
-
-
+  do{
+    pause();
+  }while(nbVers);
   
   printf("\n\n\t----- %s : Fin du jeu -----\n\n" , Nom_Prog );
   

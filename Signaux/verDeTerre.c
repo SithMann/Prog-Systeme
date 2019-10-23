@@ -12,13 +12,15 @@
 /* 
  * VARIABLES GLOBALES (utilisees dans les handlers)
  */
-int continu;
-void handler_ver(int sig){
-     continu = 0;
-}
+int estVivant;
+
 /*
  * HANDLERS
  */
+
+void handlerVer(int sig){
+     estVivant = 0;
+}
 
 int main( int nb_arg , char * tab_arg[] ) {
      char nomprog[128] ;
@@ -53,20 +55,22 @@ int main( int nb_arg , char * tab_arg[] ) {
      /***********
       * A FAIRE *
       ***********/
-     continu = 1;
-     struct sigaction act;
+     estVivant = 1;
+     struct sigaction action;
 
-     act.sa_handler = handler_ver;
-     sigemptyset(&(act.sa_mask));
-     act.sa_flags = 0;
+     action.sa_handler = handlerVer;
+     sigemptyset(&(action.sa_mask));
+     action.sa_flags = 0;
 
-     sigaction(SIGUSR2, &act, NULL);
+     sigaction(SIGUSR2, &action, NULL);
 
      //Tout les random de temps moyen on envoie un signal au processus central qui est aire.c
-     while(continu){
+     while(estVivant){
           sleep(rand() % TEMPS_MOYEN + 1);
-          if(continu)
+          if(estVivant){
                kill(pid_aire, SIGUSR1);
+               //pause();
+          }
      }
 
      printf( "\n\n--- Arret ver [%d] ---\n\n" , pid_ver );
