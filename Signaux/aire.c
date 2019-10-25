@@ -82,7 +82,7 @@ void handlerAire(int sig, siginfo_t *info, void *context){
     if(nbVers == 0){
       if(no_err = terrain_afficher(fd_terrain))
         return (no_err);
-      fprintf(stderr,"Ver gagnant : %c !\n", i+'A');
+      fprintf(stderr,"\033[34m Ver gagnant : %c !\n\033[0m", i+'A');
     }
   }
   
