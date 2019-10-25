@@ -78,9 +78,11 @@ void handlerAire(int sig, siginfo_t *info, void *context){
     else {
       kill(info->si_pid, SIGUSR2);
       nbVers --;
-      if(nbVers == 0){
-        fprintf(stderr,"Ver gagnant : %c !\n", i+'A');
-      }
+    }
+    if(nbVers == 0){
+      if(no_err = terrain_afficher(fd_terrain))
+        return (no_err);
+      fprintf(stderr,"Ver gagnant : %c !\n", i+'A');
     }
   }
   
