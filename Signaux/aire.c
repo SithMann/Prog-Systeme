@@ -76,7 +76,7 @@ void handlerAire(int sig, siginfo_t *info, void *context){
 
     }
     else {
-      kill(info->si_pid, SIGUSR2);
+      kill(info->si_pid, SIGMORT);
       nbVers --;
     }
     if(nbVers == 0){
@@ -129,7 +129,7 @@ int main( int nb_arg , char * tab_arg[] ){
   action.sa_sigaction = handlerAire;
   sigemptyset(&action.sa_mask);
   action.sa_flags = SA_SIGINFO;
-  sigaction(SIGUSR1, &action, NULL);
+  sigaction(SIGAIRE, &action, NULL);
 
   do{
     pause();

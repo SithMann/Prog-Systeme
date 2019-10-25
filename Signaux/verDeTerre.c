@@ -62,13 +62,13 @@ int main( int nb_arg , char * tab_arg[] ) {
      sigemptyset(&(action.sa_mask));
      action.sa_flags = 0;
 
-     sigaction(SIGUSR2, &action, NULL);
+     sigaction(SIGMORT, &action, NULL);
 
      //Tout les random de temps moyen on envoie un signal au processus central qui est aire.c
      while(estVivant){
           sleep(rand() % TEMPS_MOYEN + 1);
           if(estVivant){
-               kill(pid_aire, SIGUSR1);
+               kill(pid_aire, SIGAIRE);
                //pause();
           }
      }

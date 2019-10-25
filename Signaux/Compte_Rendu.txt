@@ -1,0 +1,13 @@
+DESPRES Mathis
+
+TP2 compte rendu 
+
+aire.c :
+        Le fichier aire.c sert de "tour de controle" il reçoit les signaux des processus verDeTerre (SIGUSR1 renommé en SIGAIRE
+        dans signaux.h) puis les traite avec un handler qui s'occupera soit : de créer le ver, de faire avancer le ver ou de 
+        dire si le ver est mort. Dans ce dernier cas le processus aire envoie un signal (SIGUSR2 renommé en SIGMORT dans signaux.h)
+        au processus verDeTerre en question.
+verDeTerre.c :
+        Ce processus ne fait qu'envoyer des signaux à aire pour lui demander d'avancer.
+        Lorsque le processus verDeTerre reçoit un signal SIGMORT, il le traite avec un handler qui met la variable estVivant à 0.
+        Cette variable à 0 implique la fin du processus verDeTerre.

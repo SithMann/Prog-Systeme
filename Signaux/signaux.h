@@ -6,5 +6,7 @@
  * - verDeTerre
  */
 
+#define SIGAIRE SIGUSR1
+#define SIGMORT SIGUSR2
 
 #endif
